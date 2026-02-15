@@ -1,0 +1,236 @@
+import tkinter as tk
+from tkinter import messagebox, simpledialog
+from PIL import Image, ImageTk
+import json
+import os
+
+# Store employee credentials
+EMPLOYEES = {"Tulasi@1717": "Tulsi@17", "Afeefa@1616": "Afeefa@16"}
+
+# Store customer login and balance data
+CUSTOMERS = {}
+BALANCES = {}
+
+# JSON file for persistent storage
+DATA_FILE = "data.json"
+
+# Load existing data from file
+if os.path.exists(DATA_FILE):
+    with open(DATA_FILE, "r") as f:
+        data = json.load(f)
+        CUSTOMERS = data.get("customers", {})
+        BALANCES = data.get("balances", {})
+
+# Save customer and balance data
+def save_data():
+    with open(DATA_FILE, "w") as f:
+        json.dump({"customers": CUSTOMERS, "balances": BALANCES}, f, indent=4)
+
+# Set fullscreen background image
+def set_fullscreen_bg(window, image_path=None):
+    if image_path and os.path.exists(image_path):
+        window.bg_image_original = Image.open(image_path)
+        window.bg_label = tk.Label(window)
+        window.bg_label.place(x=0, y=0, relwidth=1, relheight=1)
+
+        # Resize background dynamically
+        def resize_bg(event):
+            if hasattr(window, "bg_label"):
+                new_img = window.bg_image_original.resize((event.width, event.height))
+                window.bg_image = ImageTk.PhotoImage(new_img)
+                window.bg_label.config(image=window.bg_image)
+
+        window.bind("<Configure>", resize_bg)
+    else:
+        window.configure(bg="white")
+
+# Clear current screen widgets
+def clear_window(win):
+    for widget in win.winfo_children():
+        if widget != getattr(win, "bg_label", None):
+            widget.destroy()
+
+# Load and resize images for buttons
+def load_image(path, size=(100, 100)):
+    img = Image.open(path)
+    img = img.resize(size)
+    return ImageTk.PhotoImage(img)
+
+# Customer registration screen
+def customer_register():
+    clear_window(root)
+
+    tk.Label(root, text="Customer Registration",
+             font=("Algerian", 28, "bold"),
+             bg="white").pack(pady=20)
+
+    tk.Label(root, text="Username:", font=("Times New Roman", 22), bg="white").pack()
+    username_entry = tk.Entry(root, font=("Times New Roman", 20))
+    username_entry.pack(pady=5)
+
+    tk.Label(root, text="Password:", font=("Times New Roman", 22), bg="white").pack()
+    password_entry = tk.Entry(root, show="*", font=("Times New Roman", 20))
+    password_entry.pack(pady=5)
+
+    # Toggle password visibility
+    def toggle_password():
+        password_entry.config(show='' if password_entry.cget('show') == '*' else '*')
+
+    tk.Button(root, text="Show/Hide Password",
+              font=("Times New Roman", 18),
+              bg="black", fg="white",
+              command=toggle_password).pack(pady=5)
+
+    # Register new user
+    def register_user():
+        username = username_entry.get().strip()
+        password = password_entry.get().strip()
+
+        if not username or not password:
+            messagebox.showerror("Error", "Enter both username and password!")
+
+        elif username in CUSTOMERS:
+            messagebox.showerror("Error", "Username exists!")
+
+        else:
+            CUSTOMERS[username] = password
+            BALANCES[username] = 0
+            save_data()
+            messagebox.showinfo("Success", f"Welcome {username}!")
+            open_customer_dashboard(username)
+
+    tk.Button(root, text="Register",
+              width=14,
+              font=("Times New Roman", 20),
+              bg="black", fg="white",
+              command=register_user).pack(pady=15)
+
+# Customer login screen
+def customer_login():
+    clear_window(root)
+
+    tk.Label(root, text="Customer Login",
+             font=("Algerian", 28, "bold"),
+             bg="white").pack(pady=20)
+
+    tk.Label(root, text="Username:", font=("Times New Roman", 22), bg="white").pack()
+    username_entry = tk.Entry(root, font=("Times New Roman", 20))
+    username_entry.pack(pady=5)
+
+    tk.Label(root, text="Password:", font=("Times New Roman", 22), bg="white").pack()
+    password_entry = tk.Entry(root, show="*", font=("Times New Roman", 20))
+    password_entry.pack(pady=5)
+
+    def toggle_password():
+        password_entry.config(show='' if password_entry.cget('show') == '*' else '*')
+
+    tk.Button(root, text="Show/Hide Password",
+              font=("Times New Roman", 18),
+              bg="black", fg="white",
+              command=toggle_password).pack(pady=5)
+
+    # Validate login credentials
+    def login_user():
+        username = username_entry.get().strip()
+        password = password_entry.get().strip()
+
+        if username in CUSTOMERS and CUSTOMERS[username] == password:
+            messagebox.showinfo("Success", f"Welcome {username}!")
+            open_customer_dashboard(username)
+        else:
+            messagebox.showerror("Error", "Invalid username or password!")
+
+    tk.Button(root, text="Login",
+              width=14,
+              font=("Times New Roman", 20),
+              bg="black", fg="white",
+              command=login_user).pack(pady=15)
+
+# Customer dashboard with banking operations
+def open_customer_dashboard(username):
+    clear_window(root)
+
+    tk.Label(root, text=f"Welcome {username}",
+             font=("Algerian", 28, "bold"),
+             bg="white").pack(pady=20)
+
+    # Show current balance
+    def show_balance():
+        messagebox.showinfo("Balance", f"Current balance: ₹{BALANCES[username]}")
+
+    # Deposit money
+    def deposit():
+        amount = simpledialog.askfloat("Deposit", "Amount to deposit:")
+        if amount and amount > 0:
+            BALANCES[username] += amount
+            save_data()
+            messagebox.showinfo("Deposit", f"₹{amount} deposited!")
+
+    # Withdraw money
+    def withdraw():
+        amount = simpledialog.askfloat("Withdraw", "Amount to withdraw:")
+        if amount and amount <= BALANCES[username]:
+            BALANCES[username] -= amount
+            save_data()
+            messagebox.showinfo("Withdraw", f"₹{amount} withdrawn!")
+        else:
+            messagebox.showerror("Error", "Insufficient balance!")
+
+    # Logout and return to main screen
+    def logout():
+        main_screen()
+
+    tk.Button(root, text="Check Balance",
+              font=("Times New Roman", 18),
+              command=show_balance).pack(pady=10)
+
+    tk.Button(root, text="Deposit",
+              font=("Times New Roman", 18),
+              command=deposit).pack(pady=10)
+
+    tk.Button(root, text="Withdraw",
+              font=("Times New Roman", 18),
+              command=withdraw).pack(pady=10)
+
+    tk.Button(root, text="Logout",
+              font=("Times New Roman", 18),
+              command=logout).pack(pady=10)
+
+# Main welcome screen
+def main_screen():
+    clear_window(root)
+
+    tk.Label(root, text="Welcome to AU Bank",
+             font=("Algerian", 36, "bold"),
+             bg="white").pack(pady=30)
+
+    tk.Button(root, text="Customer Login",
+              font=("Times New Roman", 20),
+              command=customer_login).pack(pady=10)
+
+    tk.Button(root, text="Customer Register",
+              font=("Times New Roman", 20),
+              command=customer_register).pack(pady=10)
+
+    tk.Button(root, text="Close",
+              font=("Times New Roman", 20),
+              command=root.destroy).pack(pady=10)
+
+# Create main window
+root = tk.Tk()
+root.title("AU Bank")
+
+# Enable fullscreen mode
+root.attributes('-fullscreen', True)
+
+# Set background image
+set_fullscreen_bg(root, r"C:\Users\HELLO\OneDrive\Desktop\Bankbgg.png")
+
+# Exit fullscreen on ESC key
+root.bind("<Escape>", lambda e: root.destroy())
+
+# Launch main screen
+main_screen()
+
+# Start GUI loop
+root.mainloop()
