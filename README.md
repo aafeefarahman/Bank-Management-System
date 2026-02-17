@@ -1,6 +1,6 @@
-# 🏦 AU Bank Management System
+# AU Bank Management System
 
-## 📌 Overview
+## Overview
 
 The AU Bank Management System is a GUI-based banking application developed using Python and Tkinter. This system allows users to perform essential banking operations such as account registration, login, balance inquiry, deposits, withdrawals, transfers, and bill payments through an interactive graphical interface.
 
@@ -8,13 +8,13 @@ The system stores customer data securely using JSON file storage, ensuring persi
 
 ---
 
-## ❗ Problem Statement
+## Problem Statement
 
 Traditional banking simulations often lack interactive interfaces and persistent storage. This project solves that problem by providing a user-friendly GUI-based banking system that simulates real-world banking operations while maintaining secure and persistent user data.
 
 ---
 
-## ✨ Features
+## Features
 
 - Customer Registration and Login
 - Secure Authentication System
@@ -29,7 +29,7 @@ Traditional banking simulations often lack interactive interfaces and persistent
 
 ---
 
-## 🏗️ System Workflow
+## System Workflow
 
 1. User registers or logs into the system
 2. System validates user credentials
@@ -44,7 +44,7 @@ Traditional banking simulations often lack interactive interfaces and persistent
 
 ---
 
-## 🛠️ Technologies Used
+## Technologies Used
 
 | Technology | Purpose |
 |----------|---------|
@@ -56,7 +56,7 @@ Traditional banking simulations often lack interactive interfaces and persistent
 | GitHub | Project hosting |
 
 
-## ▶️ Installation and Execution
+## Installation and Execution
 
 ### Step 1: Install required library
 
@@ -70,7 +70,7 @@ pip install pillow
 python bank.py
 ```
 
-## 💡 Skills Demonstrated
+## Skills Demonstrated
 
 * GUI Application Development
 * File Handling and Data Persistence
@@ -81,7 +81,7 @@ python bank.py
 
 ---
 
-## 🚀 Future Enhancements
+## Future Enhancements
 
 * Admin Panel Integration
 * Database Integration (MySQL)
@@ -90,16 +90,7 @@ python bank.py
 * Account Number Generation
 * Email Notifications
 
----
 
-## 👩‍💻 Author
-
-**Afeefa Rahman**
-
-GitHub:
-[https://github.com/aafeefarahman](https://github.com/aafeefarahman)
-
----
 
 ## 📌 Conclusion
 
