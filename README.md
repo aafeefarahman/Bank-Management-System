@@ -91,13 +91,12 @@ python bank.py
 * Account Number Generation
 * Email Notifications
 
-
+---
 
 ## Conclusion
 
 This project successfully demonstrates the implementation of a GUI-based banking system using Python. It provides hands-on experience with GUI design, file handling, authentication, and real-world application development concepts.
 
-````
 
 
 
